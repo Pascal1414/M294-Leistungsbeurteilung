@@ -1,5 +1,9 @@
 # Leistungsbeurteilung
 
+## Algemein
+Autor: Pascal Rieder
+Version: 1.0.0
+
 ## Visual Sutdio Code
 
 Als Entwicklungsumgebung wurde Visual Studio Code verwendet.
