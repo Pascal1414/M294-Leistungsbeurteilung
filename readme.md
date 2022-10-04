@@ -1,7 +1,7 @@
 # Leistungsbeurteilung
 
 ## Algemein
-Autor: Pascal Rieder
+Autor: Pascal Rieder<br>
 Version: 1.0.0
 
 ## Visual Sutdio Code
