@@ -1,5 +1,11 @@
 {
     "name": "leistungsbeurteilung",
     "version": "1.0.0",
-    "author": "Pascal Rieder"
+    "author": "Pascal Rieder",
+    "devDependencies": {
+        "@typescript-eslint/eslint-plugin": "^5.39.0",
+        "@typescript-eslint/parser": "^5.39.0",
+        "eslint": "^8.24.0",
+        "eslint-plugin-react": "^7.31.8"
+    }
 }
