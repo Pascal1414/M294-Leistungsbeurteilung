@@ -36,9 +36,14 @@
 
         async function loadContent() {
             resetResponse();
+
+            //Get the number from the hash
             const taskId = window.location.hash.split("#")[1];
 
+            //Get token from localstorage
             const token = localStorage.getItem("token");
+
+            //Get the specific task from the API with bearer authorization
             fetch(`http://127.0.0.1:3000/auth/jwt/task/${taskId}`, {
                     headers: {
                         'Authorization': `Bearer ${token}`
@@ -47,31 +52,41 @@
                 .then(function(response) {
 
                     if (!response.ok) {
+                        //Display negative feedback to user
                         respondToUser(false, response.statusText);
                         return;
                     }
                     return response.json();
+
                 }).then(function(json) {
-                    console.log(json);
+                    //Update Website
                     updateUI(json);
+
+                    //Set the currenttask to the reponse
                     currentTask = json;
                 })
         }
 
         function resetResponse() {
+            //Get the response element
             const response = document.getElementById("response");
+
+            //Set the text to an empty string
             response.innerHTML = "";
 
         }
 
         function respondToUser(isPositive, message) {
+            //Get the response element
             const response = document.getElementById("response");
 
+            //Set the text of the response element
+            response.innerHTML = message;
+
+            //Set background color based on the positive or negative feedback
             if (isPositive) {
-                response.innerHTML = message;
                 response.style.backgroundColor = "Lightgreen";
             } else {
-                response.innerHTML = message;
                 response.style.backgroundColor = "Red";
             }
         }
@@ -80,31 +95,47 @@
             event.preventDefault();
             resetResponse();
 
+            //Get the value of the new title
             const newName = document.getElementById("title").value;
 
+            //set the new title to currenttask
             currentTask.title = newName;
 
+            //Update task in API
             updateTask(currentTask);
 
+            //Response to user
             respondToUser(true, "Task updated")
         }
 
         function logout() {
-
+            //Set token to empty string
             localStorage.setItem("token", "")
 
+            //Navigate to login page
             window.location.href = "/login.html";
         }
 
         function updateUI(task) {
+            //Set the text of the title input-element 
             document.getElementById("title").value = task.title;
 
+            //Get the checkbox 
             const checkbox = document.getElementById("completed");
+
+            //Set the value of the checkbox
             checkbox.checked = task.completed;
+
+            //Set change event to the checkbox
             checkbox.onchange = function() {
                 resetResponse();
+                //Update task to the value of the checkbox
                 task.completed = checkbox.checked;
+
+                //Update task in database
                 updateTask(task);
+
+                //Show user positive feedback
                 respondToUser("Task updated");
             };
         }
@@ -112,7 +143,10 @@
         function updateTask(task) {
             resetResponse();
 
+            //Get token from localstorage
             const token = localStorage.getItem("token");
+
+            //Update the task in the API
             fetch("http://127.0.0.1:3000/auth/jwt/tasks", {
                 method: "PUT",
                 body: JSON.stringify(task),
@@ -123,10 +157,10 @@
             }).then(function(response) {
 
                 if (!response.ok) {
+                    //Display the error to the user
                     respondToUser(false, response.statusText);
                     return;
                 }
-                console.log(response.json());
                 return;
             })
         }

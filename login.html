@@ -30,16 +30,17 @@
         function submitLogin(event) {
             event.preventDefault();
 
+            //Get the text from the input elements
             const emailText = document.getElementById("email").value;
             const passwordText = document.getElementById("password").value;
 
-
+            //Create object
             const userData = {
                 "email": emailText,
                 "password": passwordText
             }
 
-
+            //Ask the API for the correctness of the credentials
             fetch("http://127.0.0.1:3000/auth/jwt/sign", {
                 method: "POST",
                 body: JSON.stringify(userData),
@@ -47,25 +48,32 @@
                     'Content-Type': 'application/json'
                 }
             }).then(function(response) {
-                console.log(response);
 
                 if (!response.ok) {
+                    //Display error to user
                     respondToUser("Login Failed");
                     return;
                 }
-
                 return response.json();
 
             }).then(function(json) {
+                //Set token in local storage
                 localStorage.setItem("token", json.token)
+
+                //Navigate to the index site
                 window.location = "/";
             })
 
         }
 
         function respondToUser(message) {
+            //Get the response container
             const responseContainer = document.getElementById("response");
+
+            //Set the response message
             responseContainer.innerHTML = message;
+
+            //Set the Background color
             responseContainer.style.backgroundColor = "Red";
         }
     </script>
