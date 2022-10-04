@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-iYQeCzEYFbKjA/T2uDLTpkwGzCiq6soy8tYaI1GyVh/UjpbCx/TYkiZhlZB6+fzT" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.1/dist/js/bootstrap.bundle.min.js"></script>
+    <link href="login.css" rel="stylesheet">
+    <title>Login</title>
+</head>
+
+<body>
+    <form onsubmit="submitLogin(event)">
+        <label for="email">E-mail</label>
+        <input id="email" name="email" type="email" required>
+
+        <label for="password">Password</label>
+        <input id="password" name="password" type="password" required>
+
+        <div id="response">
+
+        </div>
+
+        <button type="submit" class="btn btn-primary btn-submit">Submit</button>
+    </form>
+
+    <script>
+        function submitLogin(event) {
+            event.preventDefault();
+
+            const emailText = document.getElementById("email").value;
+            const passwordText = document.getElementById("password").value;
+
+
+            const userData = {
+                "email": emailText,
+                "password": passwordText
+            }
+
+
+            fetch("http://127.0.0.1:3000/auth/jwt/sign", {
+                method: "POST",
+                body: JSON.stringify(userData),
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            }).then(function(response) {
+                console.log(response);
+
+                if (!response.ok) {
+                    respondToUser("Login Failed");
+                    return;
+                }
+
+                return response.json();
+
+            }).then(function(json) {
+                localStorage.setItem("token", json.token)
+                window.location = "/";
+            })
+
+        }
+
+        function respondToUser(message) {
+            const responseContainer = document.getElementById("response");
+            responseContainer.innerHTML = message;
+            responseContainer.style.backgroundColor = "Red";
+        }
+    </script>
+</body>
+
+</html>

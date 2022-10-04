@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-iYQeCzEYFbKjA/T2uDLTpkwGzCiq6soy8tYaI1GyVh/UjpbCx/TYkiZhlZB6+fzT" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.1/dist/js/bootstrap.bundle.min.js"></script>
+    <title>Task</title>
+</head>
+
+<body>
+    <form onsubmit="submitForm(event)">
+        <label for="title">Title</label>
+        <input id="title" name="title" required/>
+
+        <label for="completed">Completed</label>
+        <input id="completed" name="completed" type="checkbox">
+        <button class="btn btn-primary">Submit</button>
+    </form>
+
+    <div id="response">
+
+    </div>
+
+
+    <script>
+        loadContent();
+        let currentTask;
+
+        async function loadContent() {
+            resetResponse();
+            const taskId = window.location.hash.split("#")[1];
+
+            const token = localStorage.getItem("token");
+            fetch(`http://127.0.0.1:3000/auth/jwt/task/${taskId}`, {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                })
+                .then(function(response) {
+
+                    if (!response.ok) {
+                        respondToUser(false, response.statusText);
+                        return;
+                    }
+                    return response.json();
+                }).then(function(json) {
+                    console.log(json);
+                    updateUI(json);
+                    currentTask = json;
+                })
+        }
+
+        function resetResponse() {
+            const response = document.getElementById("response");
+            response.innerHTML = "";
+
+        }
+
+        function respondToUser(isPositive, message) {
+            const response = document.getElementById("response");
+
+            if (isPositive) {
+                response.innerHTML = message;
+                response.style.backgroundColor = "Lightgreen";
+            } else {
+                response.innerHTML = message;
+                response.style.backgroundColor = "Red";
+            }
+        }
+
+        function submitForm(event) {
+            event.preventDefault();
+            resetResponse();
+
+            const newName = document.getElementById("title").value;
+
+            currentTask.title = newName;
+
+            updateTask(currentTask);
+
+            respondToUser(true, "Task updated")
+        }
+
+        function updateUI(task) {
+            document.getElementById("title").value = task.title;
+
+            const checkbox = document.getElementById("completed");
+            checkbox.checked = task.completed;
+            checkbox.onchange = function() {
+                resetResponse();
+                task.completed = checkbox.checked;
+                updateTask(task);
+                respondToUser("Task updated");
+            };
+        }
+
+        function updateTask(task) {
+            resetResponse();
+
+            const token = localStorage.getItem("token");
+            fetch("http://127.0.0.1:3000/auth/jwt/tasks", {
+                method: "PUT",
+                body: JSON.stringify(task),
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`
+                }
+            }).then(function(response) {
+
+                if (!response.ok) {
+                    respondToUser(false, response.statusText);
+                    return;
+                }
+                console.log(response.json());
+                return;
+            })
+        }
+    </script>
+</body>
+
+</html>

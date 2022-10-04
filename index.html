@@ -7,11 +7,196 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-iYQeCzEYFbKjA/T2uDLTpkwGzCiq6soy8tYaI1GyVh/UjpbCx/TYkiZhlZB6+fzT" crossorigin="anonymous">
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.1/dist/js/bootstrap.bundle.min.js"></script>
+    <link href="main.css" rel="stylesheet">
     <title>Home</title>
 </head>
 
 <body>
+    <form id="newTaskForm" class="form" onsubmit="addElement(event)">
+        <label for="taskname">Task Name</label>
+        <input id="taskname" name="taskname" required>
+    </form>
+    <div id="feedback-container"></div>
 
+    <div id="task-list"></div>
 </body>
+<script>
+    let data = [];
+
+    addEventListener('DOMContentLoaded', async function() {
+        fetchTasks();
+    })
+
+
+    async function fetchTasks() {
+        const token = localStorage.getItem("token");
+
+        const response = await fetch("http://127.0.0.1:3000/auth/jwt/tasks", {
+            headers: {
+                'Authorization': `Bearer ${token}`
+            }
+        });
+
+        if (!response.ok) {
+            const feedbackContainer = document.getElementById("feedback-container");
+            feedbackContainer.innerHTML = response.statusText;
+            feedbackContainer.style.color = "Red";
+            return;
+        }
+
+        const json = await response.json();
+
+
+        data = json;
+        updateUI();
+    }
+
+    function updateUI() {
+        const list = document.getElementById("task-list");
+        list.replaceChildren();
+
+        data.forEach(function(element, id) {
+            const taskDone = document.createElement("input");
+            taskDone.checked = element.completed;
+            taskDone.type = "checkbox";
+            taskDone.onchange = function() {
+
+                data[id].completed = taskDone.checked;
+
+                updateTask(data[id]);
+            };
+            list.append(taskDone);
+
+            const taskName = document.createElement("a")
+            taskName.href = `/task.html#${element.id}`
+            taskName.innerHTML = element.title;
+            list.append(taskName);
+
+            const deleteButton = document.createElement("button");
+            deleteButton.classList.add("btn", "btn-primary");
+            deleteButton.innerHTML = "delete";
+            deleteButton.onclick = function() {
+
+                deleteTask(data[id]);
+
+                data.splice(id, 1);
+                updateUI();
+            };
+            list.append(deleteButton);
+
+        });
+
+    }
+
+    function updateTask(task) {
+        resetResponse();
+
+        const token = localStorage.getItem("token");
+
+        fetch("http://127.0.0.1:3000/auth/jwt/tasks", {
+            method: "PUT",
+            body: JSON.stringify(task),
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`
+
+            }
+        }).then(function(response) {
+
+            if (!response.ok) {
+                createResponse(false, response.statusText);
+                return;
+            }
+            console.log(response.json());
+            return;
+        })
+        createResponse(true, "Task updated");
+    }
+
+    function deleteTask(task) {
+        resetResponse();
+
+        const token = localStorage.getItem("token");
+
+        fetch(`http://127.0.0.1:3000/auth/jwt/task/${task.id}`, {
+            method: "DELETE",
+            headers: {
+                'Authorization': `Bearer ${token}`
+            }
+        }).then(function(response) {
+
+            if (!response.ok) {
+                createResponse(false, response.statusText);
+                return;
+            }
+            console.log(response.json());
+            return;
+        })
+        createResponse(true, "task deleted");
+    }
+
+    function addElement(event) {
+        event.preventDefault();
+
+        resetResponse();
+
+        const taskname = document.getElementById("taskname").value;
+
+        const task = {
+            "id": 1,
+            "completed": false,
+            "title": taskname
+        }
+
+        if (data.length > 0) {
+            task.id = data.at(-1).id + 1;
+        }
+
+        const token = localStorage.getItem("token");
+
+        fetch("http://127.0.0.1:3000/auth/jwt/tasks", {
+            method: "POST",
+            body: JSON.stringify(task),
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`
+            }
+        }).then(function(response) {
+
+            if (!response.ok) {
+                alert(response.statusText);
+                return;
+            }
+
+            return response.json();
+
+        }).then(function(json) {
+            createResponse(true, "Task added");
+        })
+
+        data.push(task);
+        updateUI();
+
+
+    }
+
+    function createResponse(isPositive, message) {
+        const feedbackContainer = document.getElementById("feedback-container");
+
+        if (isPositive) {
+            feedbackContainer.innerHTML = message;
+            feedbackContainer.style.backgroundColor = "Lightgreen";
+        } else {
+            feedbackContainer.innerHTML = message;
+            feedbackContainer.style.backgroundColor = "Red";
+        }
+    }
+
+    function resetResponse() {
+        const feedbackContainer = document.getElementById("feedback-container");
+        feedbackContainer.innerHTML = "";
+
+    }
+</script>
 
 </html>
