@@ -21,14 +21,12 @@ Die API wurde für das Projekt zur Verfügung gestellt. Sie läuft lokal im Hint
 Nach dem anmelden kann man sich eine übersich über alle Aufgaben anzeigen lassen. Diese können als erledigt markiert, gelöscht oder angeklickt werden. Beim anklicken wird man auf eine Seite weitergeleitet in der man die Aufgabe bearbeiten kann.
 ## Testprotokoll
 
-| Datum      | Autor         | Testfall                                                                  | Ergebnis    | Nachricht |
-|------------|---------------|---------------------------------------------------------------------------|-------------|-----------|
-| 04.10.2022 | Pascal Rieder | Forms können nur beendet werden, wenn alle Pflichtfelder asugefüllt sind.                                  | Erfolgreich |           |
-| 04.10.2022 | Pascal Rieder | Nach erfolgreichem Login wird man auf die Home-Seite weitergeleitet.                                       | Erfolgreich |           |
-| 04.10.2022 | Pascal Rieder | Auf der Home-Seite werden alle Tasks formatiert angezeigt.                                                 | Erfolgreich |
-| 04.10.2022 | Pascal Rieder | Beim Anklicken einer Task wird man auf die Vorschauseite navigiert.                                        | Erfolgreich |           |
-| 04.10.2022 | Pascal Rieder | Auf einer Vorschauseite wird die richtige Task angezeigt.                                                  | Erfolgreich |           |
-| 04.10.2022 | Pascal Rieder | Die Vorschauseite wird abhängig von dem Anchor mit dem Inhalt gefüllt.                                     | Erfolgreich |           |
-| 04.10.2022 | Pascal Rieder | Die bearbeitete Task wird richtig aktualisiert.                                                            | Erfolgreich |           |
-| 04.10.2022 | Pascal Rieder | Die angezeigte Liste ist immer auf dem aktuellen stand.                                                    | Erfolgreich |           |
-| 04.10.2022 | Pascal Rieder | Verändert der User die Daten wird dies mit einer erfolgreichen oder fehlgeschlagenen Nachricht informiert. | Erfolgreich |           |
+ | Datum      | Autor         | Title        | Testfall                                                                      | Reproduzieren                                                |
+|------------|---------------|--------------|-------------------------------------------------------------------------------|--------------------------------------------------------------|
+| 04.10.2022 | Pascal Rieder | Forms        | Forms können nur abgeschickt werden, wenn alle Pflichtfelder ausgefüllt sind. | Ein Form abschicken                                          |
+| 04.10.2022 | Pascal Rieder | Login        | Nach erfolgreichem Login wird man auf die Home-Seite weitergeleitet.          | 1. Email und Password eingeben 2. Form absenden              |
+| 04.10.2022 | Pascal Rieder | Show Tasks   | Auf der Home-Seite werden alle Tasks formatiert angezeigt.                    | Auf die Home-Seite navigieren                                |
+| 04.10.2022 | Pascal Rieder | Navigate     | Beim Anklicken einer Task wird man auf die Vorschauseite geleitet.            | Eine Task auf der Home-Seite anklicken.                      |
+| 04.10.2022 | Pascal Rieder | Correct Data | Auf einer Vorschauseite wird die richtige Task angezeigt.                     | Die Vorschauseite ist geöffnet und der Anker ist korrekt.    |
+| 04.10.2022 | Pascal Rieder | Correct URL  | Die Vorschauseite wird abhängig von dem Anchor mit dem Inhalt gefüllt.        | Die Vorschauseite ist geöffnet und ein Anchor ist vorhanden. |
+| 04.10.2022 | Pascal Rieder | Correct Data | Die bearbeitete Task wird richtig aktualisiert.                               | 1. Task bearbeiten 2. Task speichert 3. Überprüfen           |
