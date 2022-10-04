@@ -7,22 +7,27 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-iYQeCzEYFbKjA/T2uDLTpkwGzCiq6soy8tYaI1GyVh/UjpbCx/TYkiZhlZB6+fzT" crossorigin="anonymous">
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.1/dist/js/bootstrap.bundle.min.js"></script>
+    <link href="task.css" rel="stylesheet">
+
     <title>Task</title>
 </head>
 
 <body>
-    <form onsubmit="submitForm(event)">
-        <label for="title">Title</label>
-        <input id="title" name="title" required/>
+    <button class="btn-logout btn btn-info" onclick="logout()">Logout</button>
 
-        <label for="completed">Completed</label>
-        <input id="completed" name="completed" type="checkbox">
+    <form class="form" onsubmit="submitForm(event)">
+        <h1>Edit Task</h1>
+        <label for="title">Title</label>
+        <input class="margin-bottom" id="title" name="title" required/>
+        <div>
+            <input id="completed" name="completed" type="checkbox">
+            <label for="completed">Completed</label>
+        </div>
+        <div id="response" class="response"> </div>
         <button class="btn btn-primary">Submit</button>
     </form>
 
-    <div id="response">
 
-    </div>
 
 
     <script>
@@ -82,6 +87,13 @@
             updateTask(currentTask);
 
             respondToUser(true, "Task updated")
+        }
+
+        function logout() {
+
+            localStorage.setItem("token", "")
+
+            window.location.href = "/login.html";
         }
 
         function updateUI(task) {
