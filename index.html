@@ -15,7 +15,7 @@
     <h1>To-Do List:</h1>
     <button class="btn-logout btn btn-info" onclick="logout()">Logout</button>
 
-    <form id="newTaskForm" class="form" onsubmit="addElement(event)">
+    <form id="newTaskForm" class="form" onsubmit="addTask(event)">
         <label for="taskname">Task name</label>
         <div class="form-group">
             <input id="taskname" name="taskname" required>
@@ -30,109 +30,79 @@
     let data = [];
 
     addEventListener('DOMContentLoaded', async function() {
+        // Fetch tasks after DOM content loaded
         fetchTasks();
     })
 
 
     async function fetchTasks() {
+        resetResponse();
+
+        //Get token from localstorage
         const token = localStorage.getItem("token");
 
+        // Fetch all Tasks from API with bearer authorization
         const response = await fetch("http://127.0.0.1:3000/auth/jwt/tasks", {
             headers: {
                 'Authorization': `Bearer ${token}`
             }
         });
 
+
         if (!response.ok) {
-            const feedbackContainer = document.getElementById("feedback-container");
-            feedbackContainer.innerHTML = response.statusText;
-            feedbackContainer.style.color = "Red";
+            // When the response is not ok -> display status
+            createResponse(false, response.statusText);
             return;
         }
 
+        //Get json from response 
         const json = await response.json();
 
-
+        //Assign response to dataarray 
         data = json;
+
+        //Update Website
         updateUI();
     }
 
-    function logout() {
 
-        localStorage.setItem("token", "")
 
-        window.location.href = "/login.html";
-    }
-
-    function updateUI() {
-        const list = document.getElementById("task-list");
-        list.replaceChildren();
-
-        data.forEach(function(element, id) {
-            const taskDone = document.createElement("input");
-            taskDone.checked = element.completed;
-            taskDone.type = "checkbox";
-            taskDone.classList.add("checkbox");
-            taskDone.onchange = function() {
-
-                data[id].completed = taskDone.checked;
-
-                updateTask(data[id]);
-            };
-            list.append(taskDone);
-
-            const taskName = document.createElement("a")
-            taskName.href = `/task.html#${element.id}`
-            taskName.innerHTML = element.title;
-            taskName.classList.add("task-title");
-            list.append(taskName);
-
-            const deleteButton = document.createElement("button");
-            deleteButton.classList.add("btn", "btn-primary");
-            deleteButton.innerHTML = "delete";
-            deleteButton.onclick = function() {
-
-                deleteTask(data[id]);
-
-                data.splice(id, 1);
-                updateUI();
-            };
-            list.append(deleteButton);
-
-        });
-
-    }
 
     function updateTask(task) {
         resetResponse();
 
+        //Get token from localstorage
         const token = localStorage.getItem("token");
 
+        //Update task from API with bearer authorization
         fetch("http://127.0.0.1:3000/auth/jwt/tasks", {
             method: "PUT",
             body: JSON.stringify(task),
             headers: {
                 'Content-Type': 'application/json',
                 'Authorization': `Bearer ${token}`
-
             }
         }).then(function(response) {
 
             if (!response.ok) {
+                //Display status text to user
                 createResponse(false, response.statusText);
                 return;
             }
-            console.log(response.json());
             return;
         })
+
+        //Display user that the task is updated
         createResponse(true, "Task updated");
     }
 
     function deleteTask(task) {
         resetResponse();
 
+        //Get token from localstorage
         const token = localStorage.getItem("token");
 
+        // Delete task from API with bearer authorization
         fetch(`http://127.0.0.1:3000/auth/jwt/task/${task.id}`, {
             method: "DELETE",
             headers: {
@@ -141,34 +111,39 @@
         }).then(function(response) {
 
             if (!response.ok) {
+                //Display status text to user
                 createResponse(false, response.statusText);
                 return;
             }
-            console.log(response.json());
             return;
         })
         createResponse(true, "task deleted");
     }
 
-    function addElement(event) {
+    function addTask(event) {
         event.preventDefault();
 
         resetResponse();
 
+        //Get the value from the taskname input-field
         const taskname = document.getElementById("taskname").value;
 
+        //Create task-object with id = 1
         const task = {
             "id": 1,
             "completed": false,
             "title": taskname
         }
 
+        //If the array has multible entries update id
         if (data.length > 0) {
             task.id = data.at(-1).id + 1;
         }
 
+        //Get token from localstorage
         const token = localStorage.getItem("token");
 
+        //Add the task to the API with bearer authorization 
         fetch("http://127.0.0.1:3000/auth/jwt/tasks", {
             method: "POST",
             body: JSON.stringify(task),
@@ -179,38 +154,104 @@
         }).then(function(response) {
 
             if (!response.ok) {
+                //Display status text to user
                 alert(response.statusText);
                 return;
             }
-
             return response.json();
 
         }).then(function(json) {
+            //Display the user that the task is added
             createResponse(true, "Task added");
         })
 
+        //Add the task to the local array
         data.push(task);
+
+        //Update Website
         updateUI();
-
-
     }
 
     function createResponse(isPositive, message) {
+        //Get feedback container
         const feedbackContainer = document.getElementById("feedback-container");
 
+        //Set the message of the feedback container
+        feedbackContainer.innerHTML = message;
+
+        //Set background color based on the positive or negative feedback
         if (isPositive) {
-            feedbackContainer.innerHTML = message;
             feedbackContainer.style.backgroundColor = "Lightgreen";
         } else {
-            feedbackContainer.innerHTML = message;
             feedbackContainer.style.backgroundColor = "Red";
         }
     }
 
     function resetResponse() {
+        //Get feedback container
         const feedbackContainer = document.getElementById("feedback-container");
+
+        //Set text of feedbackcontainer to empty string
         feedbackContainer.innerHTML = "";
 
+    }
+
+    function updateUI() {
+        //Get the list where the task shud be 
+        const list = document.getElementById("task-list");
+
+        //Remove all children
+        list.replaceChildren();
+
+        data.forEach(function(element, id) {
+
+            //Create ckeckbox
+            const taskDone = document.createElement("input");
+            taskDone.checked = element.completed;
+            taskDone.type = "checkbox";
+            taskDone.classList.add("checkbox");
+            taskDone.onchange = function() {
+                //Update the local array
+                data[id].completed = taskDone.checked;
+
+                //Update task in API
+                updateTask(data[id]);
+            };
+            list.append(taskDone);
+
+            //Create task title
+            const taskName = document.createElement("a")
+            taskName.href = `/task.html#${element.id}`
+            taskName.innerHTML = element.title;
+            taskName.classList.add("task-title");
+            list.append(taskName);
+
+            //Create task delete-button
+            const deleteButton = document.createElement("button");
+            deleteButton.classList.add("btn", "btn-primary");
+            deleteButton.innerHTML = "delete";
+            deleteButton.onclick = function() {
+                //Delete task in API
+                deleteTask(data[id]);
+
+                //Remove task in local array
+                data.splice(id, 1);
+
+                //Update Website
+                updateUI();
+            };
+            list.append(deleteButton);
+
+        });
+
+    }
+
+    function logout() {
+        //Remove token from localstorage
+        localStorage.setItem("token", "")
+
+        //Navigate to login page
+        window.location.href = "/login.html";
     }
 </script>
 
