@@ -27,6 +27,11 @@
     <div id="task-list"></div>
 </body>
 <script>
+    //When there is no Token -> navigate to Login Page
+    if (localStorage.getItem("token") === "")
+        window.location.href = "/login.html";
+
+
     let data = [];
 
     addEventListener('DOMContentLoaded', async function() {
@@ -92,6 +97,7 @@
             return;
         })
 
+
         //Display user that the task is updated
         createResponse(true, "Task updated");
     }
@@ -101,6 +107,7 @@
 
         //Get token from localstorage
         const token = localStorage.getItem("token");
+
 
         // Delete task from API with bearer authorization
         fetch(`http://127.0.0.1:3000/auth/jwt/task/${task.id}`, {
@@ -118,6 +125,7 @@
             return;
         })
         createResponse(true, "task deleted");
+
     }
 
     function addTask(event) {
@@ -143,6 +151,7 @@
         //Get token from localstorage
         const token = localStorage.getItem("token");
 
+
         //Add the task to the API with bearer authorization 
         fetch("http://127.0.0.1:3000/auth/jwt/tasks", {
             method: "POST",
@@ -164,6 +173,7 @@
             //Display the user that the task is added
             createResponse(true, "Task added");
         })
+
 
         //Add the task to the local array
         data.push(task);

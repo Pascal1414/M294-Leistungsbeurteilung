@@ -26,11 +26,14 @@
         <div id="response" class="response"> </div>
         <button class="btn btn-primary">Submit</button>
     </form>
-
-
+    <button onclick="back()" class="btn-back btn btn-primary">Back</button>
 
 
     <script>
+        //When there is no Token -> navigate to Login Page
+        if (localStorage.getItem("token") === "")
+            window.location.href = "/login.html";
+
         loadContent();
         let currentTask;
 
@@ -42,6 +45,7 @@
 
             //Get token from localstorage
             const token = localStorage.getItem("token");
+
 
             //Get the specific task from the API with bearer authorization
             fetch(`http://127.0.0.1:3000/auth/jwt/task/${taskId}`, {
@@ -65,6 +69,7 @@
                     //Set the currenttask to the reponse
                     currentTask = json;
                 })
+
         }
 
         function resetResponse() {
@@ -74,6 +79,11 @@
             //Set the text to an empty string
             response.innerHTML = "";
 
+        }
+
+        function back() {
+            //Navigate to index page
+            window.location.href = "/";
         }
 
         function respondToUser(isPositive, message) {
@@ -146,6 +156,7 @@
             //Get token from localstorage
             const token = localStorage.getItem("token");
 
+
             //Update the task in the API
             fetch("http://127.0.0.1:3000/auth/jwt/tasks", {
                 method: "PUT",
@@ -163,6 +174,7 @@
                 }
                 return;
             })
+
         }
     </script>
 </body>
